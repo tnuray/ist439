@@ -1,4 +1,3 @@
-
 import pandas as pd # Verileri Excel gibi tablolar halinde düzenlemek ve analiz etmek için kullanılan kütüphane
 import os # Bilgisayarda klasör oluşturma ve dosya yollarını yönetme işlemlerini yapar.
 import re # 'Düzenli İfadeler' (Regex) kullanarak metin içinde karmaşık arama işlemleri yapar.
@@ -73,6 +72,7 @@ for i, row in sample50.iterrows():
 print("\n📊 Category Distribution:")
 distribution = sample50["label50"].value_counts().sort_index()
 print(distribution)
+
 
 
 
