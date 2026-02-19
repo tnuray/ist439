@@ -3,7 +3,7 @@ from datasets import load_dataset
 import os
 
 # 1. Data Loading
-print("🔄 Fetching dataset from Hugging Face...")
+print("Fetching dataset from Hugging Face...")
 # We load the first 50 reviews to create our "Gold Standard" training set
 dataset = load_dataset("yelp_review_full", split="train[:50]", trust_remote_code=True)
 
@@ -41,10 +41,11 @@ for i, text in enumerate(texts):
     # We use utf-8-sig for Excel compatibility
     current_df.to_csv(output_file, index=False, encoding="utf-8-sig")
 
-    print("\n📊 CURRENT PROGRESS TABLE (Saved to CSV):")
+    print("\n CURRENT PROGRESS TABLE (Saved to CSV):")
     print("-" * 70)
     print(current_df.to_string(index=False))
     print("-" * 70)
 
-print(f"\n✅ Task completed successfully!")
-print(f"Your training dataset is ready at: '{os.path.abspath(output_file)}'")
+print(f"\n Task completed successfully!")
+
+print(f" training dataset is ready at: '{os.path.abspath(output_file)}'")
