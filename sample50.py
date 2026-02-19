@@ -59,8 +59,9 @@ sample.to_parquet(os.path.join(output_dir, "sample.parquet"), index=True)
 # Statistical Summary
 # Hangi etiket kaç defa kullanılmış? (Örn: 2 numarasından 15 tane var gibi)
 print("\n📊 Category Distribution:")
-distribution = sample["label"].value_counts().sort_index()
+distribution = sample["manual_label"].value_counts().sort_index()
 print(distribution)
+
 
 
 
