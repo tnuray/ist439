@@ -49,3 +49,20 @@ for i, text in enumerate(texts):
 print(f"\n Task completed successfully!")
 
 print(f" training dataset is ready at: '{os.path.abspath(output_file)}'")
+
+
+
+## Directly input manuel categories for 50 reviews!!! ##
+dataset50 = load_dataset("yelp_review_full", split="train[:50]")
+df = dataset50.to_pandas()
+print(df.head())
+
+
+# Add column with None values (Python's version of NA)
+import pandas as pd
+import numpy as np
+df = dataset50.to_pandas()
+df['new_column'] = np.nan
+df.loc[0, 'new_column'] = 'health'
+df.loc[1, 'new_column'] = 'health'
+... Go on 
