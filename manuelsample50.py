@@ -41,9 +41,6 @@ for i, text in enumerate(texts):
     # We use utf-8-sig for Excel compatibility
     current_df.to_csv(output_file, index=False, encoding="utf-8-sig")
 
-    print("\n CURRENT PROGRESS TABLE (Saved to CSV):")
-    print(current_df.to_string(index=False))
-
 
 ## Directly input manuel categories for 50 reviews!!! ##
 dataset50 = load_dataset("yelp_review_full", split="train[:50]")
@@ -59,4 +56,5 @@ df['new_column'] = np.nan
 df.loc[0, 'new_column'] = 'health'
 df.loc[1, 'new_column'] = 'health'
 ... Go on 
+
 
