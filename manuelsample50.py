@@ -42,14 +42,7 @@ for i, text in enumerate(texts):
     current_df.to_csv(output_file, index=False, encoding="utf-8-sig")
 
     print("\n CURRENT PROGRESS TABLE (Saved to CSV):")
-    print("-" * 70)
     print(current_df.to_string(index=False))
-    print("-" * 70)
-
-print(f"\n Task completed successfully!")
-
-print(f" training dataset is ready at: '{os.path.abspath(output_file)}'")
-
 
 
 ## Directly input manuel categories for 50 reviews!!! ##
@@ -66,3 +59,4 @@ df['new_column'] = np.nan
 df.loc[0, 'new_column'] = 'health'
 df.loc[1, 'new_column'] = 'health'
 ... Go on 
+
