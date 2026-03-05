@@ -65,18 +65,24 @@ print(label_counts)
 
 #En yüksek  beğeni alan reviewslerın  (yani 4 yıldız) listelenmesi
 only_fours = df[df['label'] == 4]
-print("Reviews with 4 stars:")
 print(only_fours)
 #listelenen reviewsların kategorilerinin sayısını veren kod satırı
 print(only_fours['new_column'].value_counts().to_string())
 
+#En yüksek  beğeni alan reviewslerın  (yani 3 yıldız) listelenmesi
+only_threes = df[df['label'] == 3]
+print(only_threes)
+#listelenen reviewsların kategorilerinin sayısını veren kod satırı
+print(only_threes['new_column'].value_counts().to_string())
+
+
 
 #En düşük  beğeni alan reviewslerın  (yani 0 yıldız) listelenmesi
 only_zeros = df[df['label'] == 0]
-print("Reviews with 0 stars:")
 print(only_zeros)
 #listelenen reviewsların kategorilerinin sayısını veren kod satırı
 print(only_zeros['new_column'].value_counts())
 
 output_filename = "yelp_labeled_dataset.csv"
+
 df.to_csv(output_filename, index=False, encoding="utf-8-sig")
