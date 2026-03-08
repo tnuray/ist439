@@ -3,7 +3,7 @@ import numpy as np
 from datasets import load_dataset
 
 #dataset50 = load_dataset("yelp_review_full", split="train[:50]")
-#task1 url den sample50 yi çekme
+
 data_url = "https://huggingface.co/datasets/yelp_review_full/resolve/main/yelp_review_full/train-00000-of-00001.parquet"
 df = pd.read_parquet(data_url).head(50)
 df['new_column'] = None
@@ -62,27 +62,26 @@ df.loc[47, 'new_column']='other'
 df.loc[48, 'new_column']='food'
 df.loc[49, 'new_column']='other'
 
-#Frekansları bulan kod satırı
 print("Label  Distribution:")
 label_counts = df['label'].value_counts().sort_index().to_string()
 print(label_counts)
 
 print(df["new_column"].value_counts())
 
-#En yüksek  beğeni alan reviewslerın  (yani 4 yıldız) listelenmesi
+
 only_fours = df[df['label'] == 4]
 print(only_fours)
-#listelenen reviewsların kategorilerinin sayısını veren kod satırı
+
 print(only_fours['new_column'].value_counts().to_string())
 
 
 
 
 
-#En yüksek  beğeni alan reviewslerın  (yani 3 yıldız) listelenmesi
+
 only_threes = df[df['label'] == 3]
 print(only_threes)
-#listelenen reviewsların kategorilerinin sayısını veren kod satırı
+
 print(only_threes['new_column'].value_counts().to_string())
 
 only_twos=df[df['label']==2]
@@ -93,10 +92,10 @@ only_ones=df[df['label']==1]
 print(only_ones)
 print(only_ones['new_column'].value_counts().to_string())
 
-#En düşük  beğeni alan reviewslerın  (yani 0 yıldız) listelenmesi
+
 only_zeros = df[df['label'] == 0]
 print(only_zeros)
-#listelenen reviewsların kategorilerinin sayısını veren kod satırı
+
 print(only_zeros['new_column'].value_counts())
 
 print(df[df['new_column'] == "health"])
@@ -109,5 +108,6 @@ print(df[df['new_column'] == "health"]['label'].value_counts().sort_index())
 
 
 output_filename = "yelp_labeled_dataset.csv"
+
 
 df.to_csv(output_filename, index=False, encoding="utf-8-sig")
