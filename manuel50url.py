@@ -65,23 +65,14 @@ df.loc[49, 'new_column']='other'
 print("Label  Distribution:")
 label_counts = df['label'].value_counts().sort_index().to_string()
 print(label_counts)
-
 print(df["new_column"].value_counts())
-
 
 only_fours = df[df['label'] == 4]
 print(only_fours)
-
 print(only_fours['new_column'].value_counts().to_string())
-
-
-
-
-
 
 only_threes = df[df['label'] == 3]
 print(only_threes)
-
 print(only_threes['new_column'].value_counts().to_string())
 
 only_twos=df[df['label']==2]
@@ -92,22 +83,13 @@ only_ones=df[df['label']==1]
 print(only_ones)
 print(only_ones['new_column'].value_counts().to_string())
 
-
 only_zeros = df[df['label'] == 0]
 print(only_zeros)
-
 print(only_zeros['new_column'].value_counts())
 
 print(df[df['new_column'] == "health"])
 print(df[df['new_column'] == "health"]['label'].value_counts().sort_index())
 
-
-
-
-
-
-
 output_filename = "yelp_labeled_dataset.csv"
-
-
 df.to_csv(output_filename, index=False, encoding="utf-8-sig")
+
