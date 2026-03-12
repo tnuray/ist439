@@ -93,3 +93,21 @@ print(df[df['new_column'] == "health"]['label'].value_counts().sort_index())
 output_filename = "yelp_labeled_dataset.csv"
 df.to_csv(output_filename, index=False, encoding="utf-8-sig")
 
+
+
+
+
+# Language Detection
+# 1-LangDetect Library
+
+....code chunk
+
+
+# 2-Langid.py Library
+
+.... code chunk
+
+
+# 3-FastText Library
+
+.... code chunk
