@@ -1,6 +1,13 @@
 import pandas as pd
 import numpy as np
+import langid
+import fasttext
 from datasets import load_dataset
+from langdetect import detect
+from langdetect import DetectorFactory
+
+DetectorFactory.seed = 0   # aynı sonuçları almak için
+
 
 #dataset50 = load_dataset("yelp_review_full", split="train[:50]")
 
@@ -99,15 +106,57 @@ df.to_csv(output_filename, index=False, encoding="utf-8-sig")
 
 # Language Detection
 # 1-LangDetect Library
+def detect_language_ld(text):
+    try:
+        return detect(text)
+    except:
+        return "unknown"
+df["language_detect"] = df["text"].apply(detect_language_ld)
+print(df["language_detect"].value_counts().to_string())
+non_english = df[df["language_detect"] != "en"]
+print(non_english.to_string())
 
-....code chunk
 
 
 # 2-Langid.py Library
+def detect_language_langid(text):
+    try:
+       lang, confidence = langid.classify(text)
+       return lang
+    except:
+        return "unknown"
+df["language_langid"] = df["text"].apply(detect_language_langid)
+print(df["language_langid"].value_counts().to_string())
 
-.... code chunk
+non_english_langid = df[df["language_langid"] != "en"]
+print(non_english_langid.to_string())
 
+#confidence levelları görmek istersek
+#def detect_language_langid(text):
+#    try:
+#        return langid.classify(text)
+#    except:
+#       return ("unknown", 0.0)
+
+# Veriyi işle ve sütunlara dağıt
+#lang_results = df['text'].apply(detect_language_langid).tolist()
+#df[['langid_code', 'langid_score']] = pd.DataFrame(lang_results, index=df.index)
+#print(df[['langid_code', 'langid_score']])
 
 # 3-FastText Library
 
-.... code chunk
+model = fasttext.load_model("lid.176.bin")
+
+
+def detect_lang(text):
+    if pd.isna(text): # Eğer hücre boşsa (NaN) hata vermemesi için kontrol ekliyoruz
+        return "unknown"
+
+    text = str(text).replace("\n", " ")
+    prediction = model.predict(text)
+    label = prediction[0][0]
+    return label.replace("__label__", "")
+
+
+df["language_fasttext"] = df["text"].apply(detect_lang) #ilerleyen dönelmlerde tolist kullan
+print(df["language_fasttext"].value_counts().to_string())
