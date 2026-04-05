@@ -174,3 +174,17 @@ df_50["language_fasttext"] = df["text"].apply(detect_lang) #ilerleyen dönelmler
 print(df_50["language_fasttext"].value_counts().to_string())
 
 df_50.to_csv("yelp_processed_50_final.csv", index=False, encoding="utf-8-sig")
+
+s1 = df[df['new_label_star'] == 1].sample(n=92, random_state=42)
+s2 = df[df['new_label_star'] == 2].sample(n=82, random_state=42)
+s3 = df[df['new_label_star'] == 3].sample(n=78, random_state=42)
+s4 = df[df['new_label_star'] == 4].sample(n=76, random_state=42)
+s5 = df[df['new_label_star'] == 5].sample(n=72, random_state=42)
+
+final_list = pd.concat([s1, s2, s3, s4, s5])
+
+pd.set_option('display.max_rows', None)
+
+print(final_list[['new_label_star', 'text']])
+print(final_list['new_label_star'].value_counts().sort_index())
+final_list.to_csv("yelp_400_sample.csv", index=False, encoding="utf-8-sig")
