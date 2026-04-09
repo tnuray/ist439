@@ -284,10 +284,7 @@ def detect_language_ld(text):
 df_ag_50["language_detect"] = df_ag_50["text"].apply(detect_language_ld)
 print(df_ag_50["language_detect"].value_counts().to_string(header=False))
 non_english_ag = df_ag_50[df_ag_50["language_detect"] != "en"]
-if non_english_ag.empty:
-    print("No non-english records found. All texts are English.")
-else:
-    print(non_english_ag[['language_detect', 'text']].to_string())
+
 
 
 # 2-Langid.py Library
