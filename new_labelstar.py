@@ -479,6 +479,7 @@ df_sample_imdb = df_imdb_raw.iloc[start_idx_imdb::k_imdb].copy()
 pd.set_option('display.max_rows', None)
 print(df_sample_imdb[['row_number', 'label', 'text']])
 print(df_sample_imdb['label'].value_counts().sort_index())
+
 df_sample_imdb.to_csv("imdb_systematic_final.csv", index=False, encoding="utf-8-sig")
 
-df_imdb_50.to_csv("imdb_processed_50_final.csv", index=False, encoding="utf-8-sig")
+
