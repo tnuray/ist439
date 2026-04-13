@@ -325,6 +325,17 @@ print(non_english_ft[['label', 'language_fasttext', 'text']].to_string())
 
 df_ag_50.to_csv("ag_news_processed_50_final.csv", index=False, encoding="utf-8-sig")
 
+#13.04.26 ag news systematic sampling
+np.random.seed(42)
+df_ag_raw['row_number'] = range(1, len(df_ag_raw) + 1)
+k = 313
+start_row = 157
+start_index = start_row - 1
+df_ag_systematic = df_ag_raw.iloc[start_index::k].copy()
+pd.set_option('display.max_rows', None)
+print(df_ag_systematic[['row_number', 'label', 'text']])
+print(df_ag_systematic['label'].value_counts().sort_index())
+
 df_imdb_raw = pd.read_csv("indirilen_veriler/imdb.csv")
 df_imdb_50 = df_imdb_raw.head(50).copy()
 
@@ -455,5 +466,19 @@ print(df_imdb_50["language_fasttext"].value_counts().to_string())
 
 non_english_ft_imdb = df_imdb_50[df_imdb_50["language_fasttext"] != "en"]
 print(non_english_ft_imdb[['label', 'language_fasttext', 'text']].to_string())
+
+df_imdb_50.to_csv("imdb_processed_50_final.csv", index=False, encoding="utf-8-sig")
+
+#13.04.26 imdb systematic sampling
+np.random.seed(42)
+df_imdb_raw['row_number'] = range(1, len(df_imdb_raw) + 1)
+k_imdb = 65
+start_row_imdb = 33
+start_idx_imdb = start_row_imdb - 1
+df_sample_imdb = df_imdb_raw.iloc[start_idx_imdb::k_imdb].copy()
+pd.set_option('display.max_rows', None)
+print(df_sample_imdb[['row_number', 'label', 'text']])
+print(df_sample_imdb['label'].value_counts().sort_index())
+df_sample_imdb.to_csv("imdb_systematic_final.csv", index=False, encoding="utf-8-sig")
 
 df_imdb_50.to_csv("imdb_processed_50_final.csv", index=False, encoding="utf-8-sig")
