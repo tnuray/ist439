@@ -1,0 +1,79 @@
+import tkinter as tk
+import math
+import numpy as np
+from tkinter import messagebox
+
+# Başlangıç dili
+dil = "tr"  # "tr" = Türkçe, "en" = English
+
+def dil_secimi():
+    global dil
+    dil = var_dil.get()
+    guncelle_metni()
+
+def guncelle_metni():
+    if dil == "tr":
+        label_baslik.config(text="Data Exploration Bot'a Hoşgeldiniz! 🤖")
+        buton_hesapla.config(text="Hangi veri ile calismak istiyorsunuz? 🧮")
+
+        buton_cikis.config(text="Yelp Reviews")
+        buton_cikis.config(text="AG News")
+        buton_cikis.config(text="IMDB")
+
+      #  rb_ortalama.config(text="Ortalama")
+      #  rb_std.config(text="Standart Sapma")
+      #  rb_karekok.config(text="Karekök")
+    else:
+        label_baslik.config(text="Welcome to Data Exploration Bot! 🤖")
+        buton_hesapla.config(text="AG News")
+        buton_cikis.config(text="Yelp Reviews")
+        buton_cikis.config(text="IMDB")
+
+       # rb_ortalama.config(text="Mean")
+       # rb_std.config(text="Standard Deviation")
+       # rb_karekok.config(text="Square Root")
+
+
+
+# Ana pencere
+root = tk.Tk()
+root.title("Data Exploration Bot 🦄")
+root.geometry("500x450")
+root.resizable(False, False)
+root.configure(bg="#FFF8DC")
+
+# Dil Seçimi
+var_dil = tk.StringVar(value="tr")
+tk.Label(root, text="Select Language / Dil Seçimi", font=("Helvetica", 10, "bold"), bg="#FFF8DC").pack(pady=5)
+tk.Radiobutton(root, text="Türkçe", variable=var_dil, value="tr", command=dil_secimi, bg="#FFF8DC").pack()
+tk.Radiobutton(root, text="English", variable=var_dil, value="en", command=dil_secimi, bg="#FFF8DC").pack()
+
+# Başlık
+label_baslik = tk.Label(root, text="", font=("Helvetica", 16, "bold"), bg="#FFF8DC")
+label_baslik.pack(pady=10)
+
+# İşlem Seçimi
+# veriyi secmeli kullanici
+
+# Kullanıcı girişi
+entry = tk.Entry(root, font=("Helvetica", 12))
+entry.pack(pady=10)
+
+# Hesapla butonu
+buton_hesapla = tk.Button(root, text="", font=("Helvetica",12,"bold"), command=hesapla, bg="#FFD700")
+buton_hesapla.pack(pady=5)
+
+# Sonuç ve mesaj etiketleri
+sonuc_label = tk.Label(root, text="", font=("Helvetica", 14, "bold"), bg="#FFF8DC", fg="#FF4500")
+sonuc_label.pack(pady=10)
+mesaj_label = tk.Label(root, text="", font=("Helvetica", 12), bg="#FFF8DC", fg="#008B8B")
+mesaj_label.pack(pady=5)
+
+# Çıkış butonu
+buton_cikis = tk.Button(root, text="", font=("Helvetica",12,"bold"), command=cikis, bg="#FF6347")
+buton_cikis.pack(side="bottom", pady=20)
+
+# Dil ve metinleri başlat
+guncelle_metni()
+
+root.mainloop()
