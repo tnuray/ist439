@@ -1,12 +1,17 @@
 import customtkinter as ctk
 import pandas as pd
 import numpy as np
+import os
 from tkinter import messagebox, filedialog
 from tabulate import tabulate
 import fasttext
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 
 model_ft = fasttext.load_model("lid.176.bin")
+
+
 def detect_language_ft(text):
     if pd.isna(text):
         return "unknown"
@@ -75,32 +80,37 @@ class DataExplor(ctk.CTk):
 
         ctk.CTkButton(self.button_frame, text="Yelp Reviews",
                       command=lambda: self.load_sample("yelp")).grid(
-                      row=0, column=0, padx=10, pady=10)
+            row=0, column=0, padx=10, pady=10)
         ctk.CTkButton(self.button_frame, text="AG News",
                       command=lambda: self.load_sample("ag_news")).grid(
-                      row=0, column=1, padx=10, pady=10)
+            row=0, column=1, padx=10, pady=10)
         ctk.CTkButton(self.button_frame, text="IMDB Reviews",
                       command=lambda: self.load_sample("imdb")).grid(
-                      row=0, column=2, padx=10, pady=10)
+            row=0, column=2, padx=10, pady=10)
 
         # Display Area
         self.text_display = ctk.CTkTextbox(self, width=900, height=450,
                                            font=("Consolas", 12))
         self.text_display.pack(pady=20, padx=20)
         self.text_display.insert("0.0",
-            "System: Ready. Please select a dataset to generate a sample... ✨\n")
+                                 "System: Ready. Please select a dataset to generate a sample... ✨\n")
 
         # Save Button (bottom left)
         self.save_button = ctk.CTkButton(self, text="💾 Save (CSV)",
                                          command=self.save_csv,
                                          state="disabled", fg_color="gray")
-        self.save_button.pack(pady=5, side="left", padx=(20,5))
+        self.save_button.pack(pady=5, side="left", padx=(20, 5))
 
         # Summary Button (bottom right)
         self.summary_button = ctk.CTkButton(self, text="📊 Summary Statistics",
                                             command=self.show_summary,
                                             state="disabled", fg_color="gray")
         self.summary_button.pack(pady=5, side="left", padx=5)
+
+        # sentiment buton
+        self.predict_button = ctk.CTkButton(self, text="🤖 Sentiment Prediction",
+                                            command=self.run_llm_prediction)
+        self.predict_button.pack(pady=5, side="left", padx=5)
 
         # Status Bar
         self.status_label = ctk.CTkLabel(self, text="Status: Idle",
@@ -133,12 +143,12 @@ class DataExplor(ctk.CTk):
 
             self.text_display.delete("1.0", "end")
             self.text_display.insert("end",
-                f"--- New Sample: {filename} (n={len(df)}) ---\n\n")
+                                     f"--- New Sample: {filename} (n={len(df)}) ---\n\n")
             self.text_display.insert("end", table)
             self.text_display.insert("end",
-                f"\n\n--- Label Distribution ({label_col}) ---\n")
+                                     f"\n\n--- Label Distribution ({label_col}) ---\n")
             self.text_display.insert("end",
-                df[label_col].value_counts().sort_index().to_string())
+                                     df[label_col].value_counts().sort_index().to_string())
 
             self.status_label.configure(text="Status: Detecting languages...", text_color="orange")
             self.update()
@@ -206,58 +216,86 @@ class DataExplor(ctk.CTk):
             summary += "Label Distribution:\n"
             summary += df_raw[raw_label].value_counts().sort_index().to_string()
 
-
             self.text_display.insert("end", summary)
 
         except FileNotFoundError:
             self.text_display.insert("end", "\n[Full Dataset] File not found.\n")
 
     def display_final_labeled_data(self):
+        try:
+            df = pd.read_csv("yelp_400_labeled_final.csv")
+            display_df = df[['new_label_star', 'sentiment', 'text']].copy()
+            display_df['text'] = display_df['text'].astype(str).str.slice(0, 55) + "..."
+            table = tabulate(display_df.head(400), headers='keys', tablefmt='psql', showindex=True)
+
+            self.text_display.delete("1.0", "end")
+            self.text_display.insert("end", "--- FINAL LABELED DATASET (YELP) ---\n\n")
+            self.text_display.insert("end", table)
+
+            self.status_label.configure(text="Status: yelp_400_labeled_final.csv loaded! ✨", text_color="#00FF00")
+            self.save_button.configure(state="normal", fg_color="#1f6aa5")
+        except Exception as e:
+            print(f"Error: Could not find the file yelp_400_labeled_final.csv - {e}")
+            self.status_label.configure(text="Status: Labeled file not found!", text_color="red")
+
+    def run_llm_prediction(self):
+        labeled_file = "yelp_400_labeled_final.csv"
+        test_file = "yelp_standard_sample_400.csv"
+
+        if not os.path.exists(labeled_file):
+            messagebox.showerror("Error", "Please organize the data using Summary Statistics first!")
+            return
 
         try:
+            self.status_label.configure(text="Status: Learning from your labels...", text_color="orange")
+            self.update()
 
-                df = pd.read_csv("yelp_400_labeled_final.csv")
+            train_df = pd.read_csv(labeled_file)
+            model = Pipeline([
+                ('tfidf', TfidfVectorizer(stop_words='english')),
+                ('clf', LogisticRegression())
+            ])
 
+            model.fit(train_df['text'].astype(str), train_df['sentiment'])
+            test_df = pd.read_csv(test_file)
+            predictions = model.predict(test_df['text'].astype(str))
 
-                display_df = df[['new_label_star', 'sentiment', 'text']].copy()
-                display_df['text'] = display_df['text'].astype(str).str.slice(0, 55) + "..."
+            self.text_display.delete("1.0", "end")
+            self.text_display.insert("end", "📊 --- PREDICTION BASED ON YOUR ORGANIZED DATA --- 📊\n")
+            self.text_display.insert("end", f"Training Source: {labeled_file}\n")
+            self.text_display.insert("end", "Method: Supervised Learning (Trained by Nuray's Labels)\n")
+            self.text_display.insert("end", "=" * 65 + "\n\n")
 
+            for i in range((len(test_df))):
+                text = str(test_df['text'].iloc[i])
+                pred = predictions[i]
+                decision = "Positive (p)" if pred == 'p' else "Negative (n)"
+                preview = text[:75].replace('\n', ' ').strip()
+                self.text_display.insert("end", f"[{i + 1}] {preview}...\n")
+                self.text_display.insert("end", f"    ▶ YOUR MODEL'S DECISION: {decision}\n")
+                self.text_display.insert("end", "-" * 65 + "\n")
 
-                table = tabulate(display_df.head(400), headers='keys', tablefmt='psql', showindex=True)
-
-
-                self.text_display.delete("1.0", "end")
-                self.text_display.insert("end", "--- FINAL LABELED DATASET (YELP) ---\n\n")
-                self.text_display.insert("end", table)
-
-                self.status_label.configure(text="Status: yelp_400_labeled_final.csv loaded! ✨", text_color="#00FF00")
-                self.save_button.configure(state="normal", fg_color="#1f6aa5")
+            self.status_label.configure(text="Status: Prediction complete! ✨", text_color="#00FF00")
 
         except Exception as e:
-                # except bloğunun içi de 1 kademe sağda olmalı
-                print(f"Error: Could not find the file yelp_400_labeled_final.csv - {e}")
-                self.status_label.configure(text="Status: Labeled file not found!", text_color="red")
-
-
-
-
+            messagebox.showerror("Error", f"Prediction failed: {str(e)}")
 
 if __name__ == "__main__":
     app = DataExplor()
     app.display_final_labeled_data()
     app.mainloop()
 
-#Sentiment Analysis
 
-#def create_standard_sample():
-    #df_sample, _ = sample_yelp()
-   # df_sample.to_csv("yelp_standard_sample_400.csv", index=True, encoding="utf-8-sig")
+# Sentiment Analysis
 
-#create_standard_sample()
+# def create_standard_sample():
+# df_sample, _ = sample_yelp()
+# df_sample.to_csv("yelp_standard_sample_400.csv", index=True, encoding="utf-8-sig")
+
+# create_standard_sample()
 
 def apply_sentiment_and_save():
-
-    df = pd.read_csv("yelp_standard_sample_400.csv" ,index_col=0)
+    df = pd.read_csv("yelp_standard_sample_400.csv", index_col=0)
     df['sentiment'] = ""
     df.loc[0, 'sentiment'] = 'n'
     df.loc[1, 'sentiment'] = 'n'
@@ -433,7 +471,7 @@ def apply_sentiment_and_save():
     df.loc[171, 'sentiment'] = 'n'
     df.loc[172, 'sentiment'] = 'n'
     df.loc[173, 'sentiment'] = 'n'
-    df.loc[174, 'sentiment'] = 'n' #n
+    df.loc[174, 'sentiment'] = 'n'  # n
     df.loc[175, 'sentiment'] = 'n'
     df.loc[176, 'sentiment'] = 'n'
     df.loc[177, 'sentiment'] = 'n'
@@ -510,7 +548,7 @@ def apply_sentiment_and_save():
     df.loc[248, 'sentiment'] = 'n'
     df.loc[249, 'sentiment'] = 'n'
     df.loc[250, 'sentiment'] = 'n'
-    df.loc[251, 'sentiment'] = 'n' #n
+    df.loc[251, 'sentiment'] = 'n'  # n
     df.loc[252, 'sentiment'] = 'p'
     df.loc[253, 'sentiment'] = 'p'
     df.loc[254, 'sentiment'] = 'p'
@@ -662,10 +700,6 @@ def apply_sentiment_and_save():
 
     df.to_csv("yelp_400_labeled_final.csv", index=False, encoding="utf-8-sig")
 
-#apply_sentiment_and_save()
+# apply_sentiment_and_save()
 
-
-
-
-
-
+# LLM
