@@ -207,7 +207,7 @@ class DataExplor(ctk.CTk):
         # Güvenli kontrol
         if self.current_df is None: return
 
-        # 1. ÖNCE GENEL İSTATİSTİKLER GELSİN
+       
         raw_info = {
             "yelp": ("yelp_stars_fixed.csv", "new_label_star"),
             "ag_news": ("indirilen_veriler/ag_news.csv", "label"),
@@ -250,7 +250,7 @@ class DataExplor(ctk.CTk):
             display_df['text'] = display_df['text'].astype(str).str.slice(0, 55) + "..."
             table = tabulate(display_df.head(400), headers='keys', tablefmt='psql', showindex=True)
 
-            # Başına bir satır boşluk ekledim ki istatistiklerle yapışmasın
+           
             self.text_display.insert("end", "\n--- FINAL LABELED RESEARCH DATASET (YELP) ---\n\n" + table + "\n")
             self.status_label.configure(text="Status: Research data loaded! ✨", text_color="#00FF00")
             self.save_button.configure(state="normal", fg_color="#1f6aa5")
@@ -323,7 +323,7 @@ class DataExplor(ctk.CTk):
             # 1. Veriyi Oku
             full_labeled_df = pd.read_csv(labeled_file)
 
-            # --- EKLEME: Gerçekçi etkinlik ölçümü için veriyi bölüyoruz ---
+            #  Gerçekçi etkinlik ölçümü için veriyi bölüyoruz
             # Verinin %80'i ile öğrenecek, %20'si ile kendini test edecek
             train_df, val_df = train_test_split(full_labeled_df, test_size=0.2, random_state=42)
 
@@ -346,7 +346,7 @@ class DataExplor(ctk.CTk):
             self.text_display.delete("1.0", "end")
             self.text_display.insert("end", "📊 --- PREDICTION BASED ON YOUR ORGANIZED DATA --- 📊\n")
 
-            # --- EKLEME: Etkinlik Raporunu Arayüze Yazdır ---
+            #  Etkinlik Raporunu Arayüze Yazdırır
             from sklearn.metrics import classification_report
             val_preds = model.predict(val_df['text'].astype(str))
             report = classification_report(val_df['sentiment'], val_preds)
@@ -411,7 +411,7 @@ class DataExplor(ctk.CTk):
             self.text_display.delete("1.0", "end")
             self.text_display.insert("end", "📊 --- PREDICTION BASED ON YOUR ORGANIZED DATA --- 📊\n")
 
-            #  Gerçek Etkinlik Raporunu Yazdııyoruz
+            #  Gerçek Etkinlik Raporunu Yazdırıyoruz
             from sklearn.metrics import classification_report
             val_preds = model.predict(val_df[text_col].astype(str))
             report = classification_report(val_df['sentiment'], val_preds)
